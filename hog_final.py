@@ -106,17 +106,7 @@ def other(who):
     return 1 - who
 
 def play(strategy0, strategy1, score0=0, score1=0, goal=GOAL_SCORE):
-    """Simulate a game and return the final scores of both players, with
-    Player 0's score first, and Player 1's score second.
-    A strategy is a function that takes two total scores as arguments
-    (the current player's score, and the opponent's score), and returns a
-    number of dice that the current player will roll this turn.
-    strategy0:  The strategy function for Player 0, who plays first
-    strategy1:  The strategy function for Player 1, who plays second
-    score0   :  The starting score for Player 0
-    score1   :  The starting score for Player 1
-    """
-    who = 0  # Which player is about to take a turn, 0 (first) or 1 (second)
+    who = 0 
     "*** YOUR CODE HERE ***"
     while score0 < goal and score1 < goal:
         dice = select_dice(score0,score1)
@@ -136,8 +126,7 @@ def play(strategy0, strategy1, score0=0, score1=0, goal=GOAL_SCORE):
                 score0 = score0 + this_score
         who = other(who)
 
-    return score0, score1  # You may want to change this line.
-
+    return score0, score1 
 
 ######################
 # Часть 2: Стратегии #
@@ -267,11 +256,6 @@ def bacon_strategy(score, opponent_score, margin=8, num_rolls=5):
         return num_rolls
 
 def prime_strategy(score, opponent_score, margin=8, num_rolls=5):
-    """Эта стратегия This strategy rolls 0 dice when it results in a beneficial boost and
-    rolls NUM_ROLLS if rolling 0 dice gives the opponent a boost. It also
-    rolls 0 dice if that gives at least MARGIN points and rolls NUM_ROLLS
-    otherwise.
-    """
     "*** ТВОЙ КОД ЗДЕСЬ ***"
     free_bacon = int(max(str(opponent_score)))+1
     if is_prime(free_bacon+score+opponent_score):
@@ -286,55 +270,50 @@ def prime_strategy(score, opponent_score, margin=8, num_rolls=5):
             return num_rolls
 
 def final_strategy(score, opponent_score):
-    """Напиши краткое описание твоей финальной стратегии.
-
-    *** ТВОЕ ОПИСАНИЕ ЗДЕСЬ ***
-    """
-    "*** ТВОЙ КОД ЗДЕСЬ ***"
-    free_bacon = int(max(str(opponent_score)))+1 #assign the score you would get if you choose to roll 0 dice
-    opp_bacon = int(max(str(score)))+1 #oppponent's free bacon 
+    free_bacon = int(max(str(opponent_score))) + 1
+    opp_bacon = int(max(str(score))) + 1
     margin = 8
     num_rolls = 5
 
     if free_bacon + score >= 100:
         return 0
     else:  
-        if opponent_score < 33: #Opening
+        if opponent_score < 33: 
             if score >= opponent_score:
-                margin = margin - ((score-opponent_score)//9) #decrease margin to a lower number if you are far ahead. If it is close margin = 8
+                margin = margin - ((score-opponent_score)//9)
             elif (score + 15) < opponent_score:
-                margin = 8 #if I am trailing by more than 15 in the opening, don't utilize free bacon unless it adds 8,9 or 10
+                margin = 8 
                 num_rolls = 6
-            if (free_bacon + score + opponent_score)%7 == 0 and free_bacon >= 6: # Force my opponent to roll 4 sided dice by utilizing free bacon
+            if (free_bacon + score + opponent_score)%7 == 0 and free_bacon >= 6: 
                 return 0 
-            if (1 + score + opponent_score)%7 == 0: #if pigging out results in my oppponent having to roll 4 sided dice, take a bigger risk
+            if (1 + score + opponent_score)%7 == 0: 
                 num_rolls = num_rolls + 1
-            if (score + opponent_score)%7 == 0: #When I have to roll a 4 sided dice, I decrease the amount of dice I want to roll
+            if (score + opponent_score)%7 == 0:
                 num_rolls = num_rolls -2
                 if num_rolls <= 0:
                     num_rolls = 1
                     margin = 4
             
         
-        elif opponent_score <= 66 and opponent_score >= 33: #MiddleGame
+        elif opponent_score <= 66 and opponent_score >= 33:
             if score >= opponent_score:
-                margin = margin - ((score-opponent_score)//11) #decrease margin to a lower number if you are far ahead. If it is close margin = 8
+                margin = margin - ((score-opponent_score)//11) 
             elif (score +10) <= opponent_score:
-                margin = 8 #if I am trailing by 10 or less, only use free bacon if it gives you 10 9 or 8 points
-            if (free_bacon + score + opponent_score)%7 == 0 and free_bacon >= 6: # Force my opponent to roll 4 sided dice by utilizing free bacon
+                margin = 8 
+            if (free_bacon + score + opponent_score)%7 == 0 and free_bacon >= 6:
                 return 0 
-            if (1 + score + opponent_score)%7 == 0: #if pigging out results in my oppponent having to roll 4 sided dice, take a bigger risk
+            if (1 + score + opponent_score)%7 == 0: 
                 num_rolls = num_rolls + 1
-            if (score + opponent_score)%7 == 0: #When I have to roll a 4 sided dice, I decrease the amount of dice I want to roll
+            if (score + opponent_score)%7 == 0: 
                 num_rolls = num_rolls -2
                 if num_rolls <= 0:
                     num_rolls = 1
                     margin = 4
             
 
-        else: #EndGame
+        else:
             if score >= opponent_score:
-                margin = margin - ((score-opponent_score)//10) #decrease margin to a lower number if you are far ahead. If it is close margin = 8
+                margin = margin - ((score-opponent_score)//10) 
                 num_rolls = num_rolls - ((score-opponent_score)//10) 
                 if num_rolls <= 0:
                     num_rolls = 1
@@ -346,22 +325,22 @@ def final_strategy(score, opponent_score):
                         num_rolls = 1
                         margin = 4
             elif (score +10) <= opponent_score:
-                margin = 10 #if I am trailing by 10 or less, only use free bacon if it gives you 10 points
-                if opponent_score + opp_bacon >= 100: #opponent will win on next turn if I don't win now
-                    margin = 11 #don't use free bacon in this case
+                margin = 10 
+                if opponent_score + opp_bacon >= 100:
+                    margin = 11 
                     if score < 67:
-                        num_rolls = 8 #desperation- try to get 33 or more by rolling 8 dice
+                        num_rolls = 8 
                     elif score < 74:
                         num_rolls = 7
                     else:
                         num_rolls = 6
-            else: #if I am trailing by less than 10 
-                if opponent_score + opp_bacon >= 100: #opponent will win on next turn if I don't win now
-                    margin = 11 #don't use free bacon in this case
+            else: 
+                if opponent_score + opp_bacon >= 100: 
+                    margin = 11
                 elif opponent_score >= 80:
-                    if (free_bacon + score + opponent_score)%7 == 0 and free_bacon >= 6: # Force my opponent to roll 4 sided dice by utilizing free bacon
+                    if (free_bacon + score + opponent_score)%7 == 0 and free_bacon >= 6:
                         return 0 
-                    if (score + opponent_score)%7 == 0: #When I have to roll a 4 sided dice, I decrease the amount of dice I want to roll
+                    if (score + opponent_score)%7 == 0: 
                         num_rolls = num_rolls -2
                         if num_rolls <= 0:
                             num_rolls = 1
